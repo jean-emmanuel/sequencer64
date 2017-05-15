@@ -889,7 +889,11 @@ perfedit::set_image (bool isrunning)
 void
 perfedit::start_playing ()
 {
-    perf().pause_key(true);             /* was perf().start_key(true)       */
+    #ifdef SEQ64_PAUSE_SUPPORT
+        perf().pause_key(true);
+    #else
+        perf().start_key(true);
+    #endif
 }
 
 /**
