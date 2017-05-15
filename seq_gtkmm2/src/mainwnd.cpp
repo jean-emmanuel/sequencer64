@@ -1920,7 +1920,11 @@ mainwnd::clear_mute_groups ()
 void
 mainwnd::start_playing ()                           /* Play!                */
 {
+#ifdef SEQ64_PAUSE_SUPPORT
     perf().pause_key();                             /* not start_key()      */
+#else
+    perf().start_key();
+#endif
 }
 
 /**
