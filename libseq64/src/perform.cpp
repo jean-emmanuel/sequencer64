@@ -2201,10 +2201,15 @@ perform::start_playing (bool songmode)
         *
         *   m_jack_asst.position(true, m_left_tick);    // position_jack()
         *
-        * The "! m_repostion" doesn't seem to make sense.
+        * The "! m_repostion" didn't seem to make sense and messes with playback
+        * restart feature in song editor
+        *
+        * if (is_jack_master() && ! m_reposition)
+        *     position_jack(true, m_left_tick);
+        *
         */
 
-       if (is_jack_master() && ! m_reposition)
+       if (is_jack_master())
            position_jack(true, m_left_tick);
     }
     else
