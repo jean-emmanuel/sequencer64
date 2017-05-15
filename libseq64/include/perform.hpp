@@ -1883,6 +1883,7 @@ public:
 
     void start_playing (bool songmode = false);
     void pause_playing (bool songmode = false);
+    void restart_playing (bool songmode = false);
     void stop_playing ();
     void start_key (bool songmode = false);
     void pause_key (bool songmode = false);

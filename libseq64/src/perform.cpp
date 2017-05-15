@@ -2369,6 +2369,35 @@ perform::stop_playing ()
 }
 
 /**
+ *  Restart playback (stop and start again).
+ *
+ *  It would be better to reliably wait for playback to be stopped rather than
+ *  waiting an arbitrary amount of time (5ms here).
+ *  Worst case scenario: playback continues normally
+ *
+ * \param songmode
+ *      Indicates that, if restarting play, it should play in Song mode (true)
+ *      or Live mode (false).  See the comments for the start_playing()
+ *      function.
+ */
+
+void
+perform::restart_playing (bool songmode)
+{
+    stop_playing();
+#ifdef PLATFORM_WINDOWS
+    long delta = 5;
+    Sleep(delta);
+#else
+    struct timespec delta;
+    delta.tv_sec = 0;
+    delta.tv_nsec = 5 * 1000000L;
+    nanosleep(&delta, NULL);
+#endif
+    start_playing(songmode);
+}
+
+/**
  *  If JACK is supported and running, sets the position of the transport.
  *
  * \param songmode
@@ -4816,6 +4845,11 @@ perform::playback_key_event (const keystroke & k, bool songmode)
                 start_playing(songmode);
                 isplaying = true;
             }
+            else if (is_running())
+            {
+                restart_playing(songmode);
+                isplaying = true;
+            }
         }
         else if (k.key() == keys().stop())
         {
@@ -4873,11 +4907,15 @@ perform::playback_action (playback_action_t p, bool songmode)
     bool isplaying = false;
     if (p == PLAYBACK_START)
     {
-        if (! is_running())             /* what about a restart???? */
+        if (! is_running())
         {
             start_playing(songmode);
-            isplaying = true;
         }
+        else
+        {
+            restart_playing(songmode);
+        }
+        isplaying = true;
     }
     else if (p == PLAYBACK_STOP)
     {
